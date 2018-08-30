@@ -71,6 +71,8 @@ func handleMessages() {
                                 client.Close()
                                 delete(clients, client)
                         }
+
+                        client.WriteJSON(len(clients))
                 }
         }
 }

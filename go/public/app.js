@@ -3,18 +3,22 @@ new Vue({
 
     data: {
         ws: null, // Our websocket
+        online: 'Please send a message to the group',
         newMsg: '', // Holds new messages to be sent to the server
         chatContent: '', // A running list of chat messages displayed on the screen
         email: null, // Email address used for grabbing an avatar
         username: null, // Our username
-        joined: false // True if email and username have been filled in
+        joined: false// True if email and username have been filled in
+        //track of online users
     },
     created: function() {
         var self = this;
+       
         this.ws = new WebSocket('ws://' + window.location.host + '/ws');
         this.ws.addEventListener('message', function(e) {
+            
             var msg = JSON.parse(e.data);
-           
+            self.online = msg;
             self.chatContent += '<div class="chip">'
                     + '<img src="' + self.gravatarURL(msg.email) + '">' // Avatar
                     + msg.username
@@ -23,6 +27,17 @@ new Vue({
             var element = document.getElementById('chat-messages');
             element.scrollTop = element.scrollHeight; // Auto scroll to the bottom
         });
+
+        //this.newws = new WebSocket('ws://' + window.location.host + '/ws');
+        //this.newws.addEventListener('msg', function(e) {
+        //    this.online = e;
+            
+            
+            
+       // });
+
+
+
     },
     methods: {
         send: function () {
@@ -34,7 +49,8 @@ new Vue({
                         message: $('<p>').html(this.newMsg).text() // Strip out html
                     }
                 ));
-                this.newMsg = ''; // Reset newMsg
+                this.newMsg = '';// Reset newMsg
+
             }
         },
         join: function () {
@@ -49,6 +65,7 @@ new Vue({
             this.email = $('<p>').html(this.email).text();
             this.username = $('<p>').html(this.username).text();
             this.joined = true;
+            
         },
         gravatarURL: function(email) {
             return 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(email);
